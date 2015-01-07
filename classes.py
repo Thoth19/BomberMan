@@ -17,7 +17,8 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.color = color
         self.speed = INITIAL_PLAYER_SPEED
         self.range = 1
-        self.bombs = 1
+        self.bombs = 0
+        self.bombs_max=1
         self.image = pygame.image.load('player.png').convert()
         image2 = pygame.PixelArray(self.image)
         image2.replace((255,255,255),color)
@@ -27,11 +28,13 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.rect.x = position[0] * 50
         self.rect.y = position[1] * 50
         self.direction = 0 #angle
+        self.alive = 1
     def rotate(self, direction):
         self.image = pygame.transform.rotate(self.image,direction-self.direction)
         self.direction = direction
     def move(self, position):
-        self.rect.x , self.rect.y = position #note this is upper left corner
+        self.rect.x , self.rect.y = position[0]+self.rect.x,position[1]+self.rect.y #note this is upper left corner
+
 
 class BombSprite(pygame.sprite.Sprite):
     def __init__(self, position, power):
