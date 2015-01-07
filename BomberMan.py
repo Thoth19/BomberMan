@@ -33,6 +33,7 @@ bomb_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()
 granite_group = pygame.sprite.Group()
 powerup_group = pygame.sprite.Group()
+explosion_group = pygame.sprite.Group()
 
 for i in range(len(board)):
     for j in range(len(board[i])):
@@ -114,6 +115,17 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
             pass
 
     for player in player_group:
+        for wall in player_group:
+            if player.rect.colliderect(wall) and wall != player:
+                if player.direction == -90:
+                    player.rect.right = wall.rect.left
+                elif player.direction == 90:
+                    player.rect.left = wall.rect.right
+                    
+                if player.direction == 0:
+                    player.rect.top = wall.rect.bottom
+                elif player.direction == 180:
+                    player.rect.bottom = wall.rect.top
         for wall in wall_group:
             if player.rect.colliderect(wall):
                 if player.direction == -90:
@@ -136,8 +148,24 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                     player.rect.top = wall.rect.bottom
                 elif player.direction == 180:
                     player.rect.bottom = wall.rect.top
+        for powerup in powerup_group:
+            if player.rect.colliderect(powerup):
+                if powerup.style == 1:
+                    player.range +=1
+                elif powerup.style == 2:
+                    player.speed += SPEED_INCREASE_FACTOR
+                elif powerup.style == 3:
+                    player.bombs_max += 1
+                powerup_group.remove(powerup)
+                all_group.remove(powerup)
+        for explosion in explosion_group:
+            if player.rect.colliderect(explosion):
+                player.alive = 0
+                player_group.remove(player)
+                all_group.remove(player)
 
-
+    #spawn explosions
+    #able to pass through explosions to begin
 
     #powerups
     if (num_powerups + 1) * POWERUP_FREQUENCY < time:
