@@ -37,10 +37,10 @@ class PlayerSprite(pygame.sprite.Sprite):
 
 
 class BombSprite(pygame.sprite.Sprite):
-    def __init__(self, position, power):
+    def __init__(self, owner):
         pygame.sprite.Sprite.__init__(self)
-        self.position = position
-        self.power = power
+        self.position = owner.position
+        self.power = owner.range
         self.time = 0
         self.image = pygame.image.load('bomb.png').convert()
         self.rect = self.image.get_rect()
