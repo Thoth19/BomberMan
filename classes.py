@@ -7,6 +7,8 @@ EXPLOSION_WIDTH = 30
 
 INITIAL_PLAYER_SPEED = 3
 
+#consider optimizing image creation for objects
+
 #position always refers to square. use rect to store pixel position
 class PlayerSprite(pygame.sprite.Sprite):
 	def __init__(self, position, color):
@@ -38,10 +40,20 @@ class BombSprite(pygame.sprite.Sprite):
 	def update(self):
 		self.time += 1
 class WallSprite(pygame.sprite.Sprite):
+	#breakable
 	def __init__(self, position):
 		pygame.sprite.Sprite.__init__(self)
 		self.position = position
-        self.image = pygame.image.load('bomb.png').convert()
+        self.image.fill((144,144,144))
+        self.rect = self.image.get_rect()
+    def update(self):
+    	pass
+class GraniteSprite(pygame.sprite.Sprite):
+	#not breakable
+	def __init__(self, position):
+		pygame.sprite.Sprite.__init__(self)
+		self.position = position
+        self.image.fill((0,0,0))
         self.rect = self.image.get_rect()
     def update(self):
     	pass
@@ -64,6 +76,7 @@ class ExplosionCenterSprite(pygame.sprite.Sprite):
         self.time = 0
     def update(self):
     	self.time += 1
+#consider powerups being one object with a variable and three possible images
 class FirePowerSprite(pygame.sprite.Sprite):
 	def __init__(self, position):
 		pygame.sprite.Sprite.__init__(self)
