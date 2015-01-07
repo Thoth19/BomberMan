@@ -13,16 +13,16 @@ pygame.display.set_caption('BomberMan: A Game of Agility, Strategy and C4')
 #init board
 
 STANDARD_BOARD = [
-[2,2,2,2,2,2,2,2,2,2,2]
-[2,3,0,1,1,1,1,1,1,4,2]
-[2,0,2,1,2,1,2,1,2,0,2]
-[2,1,1,1,1,1,1,1,1,1,2]
-[2,1,2,1,2,1,2,1,2,1,2]
-[2,1,1,1,1,1,1,1,1,1,2]
-[2,1,2,1,2,1,2,1,2,1,2]
-[2,1,1,1,1,1,1,1,1,1,2]
-[2,1,2,1,2,1,2,1,2,1,2]
-[2,5,0,1,1,1,1,1,1,6,2]
+[2,2,2,2,2,2,2,2,2,2,2],
+[2,3,0,1,1,1,1,1,1,4,2],
+[2,0,2,1,2,1,2,1,2,0,2],
+[2,1,1,1,1,1,1,1,1,1,2],
+[2,1,2,1,2,1,2,1,2,1,2],
+[2,1,1,1,1,1,1,1,1,1,2],
+[2,1,2,1,2,1,2,1,2,1,2],
+[2,1,1,1,1,1,1,1,1,1,2],
+[2,1,2,1,2,1,2,1,2,1,2],
+[0,5,0,1,1,1,1,1,1,6,0],
 [2,2,2,2,2,2,2,2,2,2,2]]
 board = STANDARD_BOARD
 #todo make boards randomized
@@ -34,34 +34,44 @@ wall_group = pygame.sprite.Group()
 granite_group = pygame.sprite.Group()
 powerup_group = pygame.sprite.Group()
 
-
+print len(board)
 for i in range(len(board)):
-	for j in range(len(board[i])):
-		if board[i][j] == 2:
-			granite = GraniteSprite((i,j))
-			granite_group.add(granite)
-			all_group.add(granite)
-		if board[i][j] == 1:
-			wall = WallSprite((i,j))
-			wall_group.add(wall)
-			all_group.add(wall)
-		if board[i][j] == 3:
-			player1 = PlayerSprite((i,j),(255,0,0))
-			player_group.add(player1)
-			all_group.add(player1)
-		if board[i][j] == 4:
-			player2 = PlayerSprite((i,j),(0,0,255))
-			player_group.add(player2)
-			all_group.add(player2)
-		if board[i][j] == 5:
-			player3 = PlayerSprite((i,j),(0,255,0))
-			player_group.add(player3)
-			all_group.add(player3)
-		if board[i][j] == 6:
-			player4 = PlayerSprite((i,j),(255,255,0))
-			player_group.add(player4)
-			all_group.add(player4)
+    print len(board[i])
+    for j in range(len(board[i])):
+        if board[i][j] == 2:
+            granite = GraniteSprite((i,j))
+            granite_group.add(granite)
+            all_group.add(granite)
+        if board[i][j] == 1:
+            wall = WallSprite((i,j))
+            wall_group.add(wall)
+            all_group.add(wall)
+        if board[i][j] == 3:
+            player1 = PlayerSprite((i,j),(255,0,0))
+            player_group.add(player1)
+            all_group.add(player1)
+        if board[i][j] == 4:
+            player2 = PlayerSprite((i,j),(0,0,255))
+            player_group.add(player2)
+            all_group.add(player2)
+        if board[i][j] == 5:
+            player3 = PlayerSprite((i,j),(0,255,0))
+            player_group.add(player3)
+            all_group.add(player3)
+        if board[i][j] == 6:
+            player4 = PlayerSprite((i,j),(255,255,0))
+            player_group.add(player4)
+            all_group.add(player4)
 screen.fill((224,224,224))
 all_group.update()
 all_group.draw(screen)
 pygame.display.flip()
+print "here"
+alive = True
+while alive:
+    pressed = pygame.key.get_pressed()
+    print pressed[pygame.K_q]
+    if pressed[pygame.K_q]:
+            pygame.display.quit()
+            alive = False
+            print "there"
