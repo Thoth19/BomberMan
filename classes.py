@@ -18,7 +18,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.speed = INITIAL_PLAYER_SPEED
         self.range = 1
         self.bombs = 0
-        self.bombs_max=1
+        self.bombs_max=5
         self.image = pygame.image.load('player.png').convert()
         image2 = pygame.PixelArray(self.image)
         image2.replace((255,255,255),color)
@@ -33,7 +33,8 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image,direction-self.direction)
         self.direction = direction
     def move(self, position):
-        self.rect.x , self.rect.y = position[0]+self.rect.x,position[1]+self.rect.y #note this is upper left corner
+        if self.alive:
+            self.rect.x , self.rect.y = position[0]+self.rect.x,position[1]+self.rect.y #note this is upper left corner
 
 
 class BombSprite(pygame.sprite.Sprite):
@@ -79,9 +80,9 @@ class ExplosionLineSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.image = pygame.image.load('fireStrip.png').convert()
-        self.rect = self.image.get_rect()
         self.image = pygame.transform.scale(self.image,(50,30))
         self.horiz = horiz #boolean for angle
+        self.rect = self.image.get_rect()
         self.rect.x = position[0] * 50
         self.rect.y = position[1] * 50
         if not(horiz):
@@ -89,6 +90,7 @@ class ExplosionLineSprite(pygame.sprite.Sprite):
             self.rect.x += 10
         else:
             self.rect.y +=10
+        self.rect = self.image.get_rect()
         self.time = 0
     def update(self):
         self.time += 1
@@ -112,14 +114,16 @@ class PowerSprite(pygame.sprite.Sprite):
         self.position = position
         if style == 1:
             self.image = pygame.image.load('powerupFire.png').convert()
+            self.image.set_colorkey((255,255,255))
             self.style = 1
         elif style == 2:
             self.image = pygame.image.load('powerupSpeed.png').convert()
             self.style = 2
+            self.image.set_colorkey((0,0,0))
         else:
             self.image = pygame.image.load('powerupBomb.png').convert()
             self.style = 3
+            self.image.set_colorkey((0,0,0))
         self.rect = self.image.get_rect()
-        self.rect.x = position[0] * 50
-        self.rect.y = position[1] * 50
-        self.image.set_colorkey((255,255,255))
+        self.rect.x = position[0] * 50 +5
+        self.rect.y = position[1] * 50 +5
