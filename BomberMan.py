@@ -4,7 +4,7 @@ pygame.init()
 screen = pygame.display.set_mode([555,555])
 clock = pygame.time.Clock()
 
-POWERUP_FREQUENCY = 15000 # higher means less frequent
+POWERUP_FREQUENCY = 100 # higher means less frequent
 SPEED_INCREASE_FACTOR = 0.5
 BOMB_FUSE_LENGTH = 100 # time in ms between plant and detonation
 EXPLOSION_LIFE_TIME = 50 # time in ms between explode and end
@@ -14,9 +14,9 @@ pygame.display.set_caption('BomberMan: A Game of Agility, Strategy and C4')
 
 STANDARD_BOARD = [
 [2,2,2,2,2,2,2,2,2,2,2],
-[2,3,0,1,1,1,1,1,1,4,2],
-[2,0,2,1,2,1,2,1,2,0,2],
-[2,1,1,1,1,1,1,1,1,1,2],
+[2,3,0,0,1,1,1,1,0,0,2],
+[2,4,0,0,2,1,2,1,2,0,2],
+[2,0,0,0,1,1,1,1,1,1,2],
 [2,1,2,1,2,1,2,1,2,1,2],
 [2,1,1,1,1,1,1,1,1,1,2],
 [2,1,2,1,2,1,2,1,2,1,2],
@@ -110,7 +110,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         bomb_group.add(bomb)
         all_group.add(bomb)
         player1.bombs += 1
-
+        print player1.bombs, player1.bombs_max
     #update player position when they change squares
     player1.position = player1.rect.x/50,player1.rect.y/50
 
@@ -229,6 +229,16 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                     player.rect.top = wall.rect.bottom
                 elif player.direction == 180:
                     player.rect.bottom = wall.rect.top
+        for wall in bomb_group:
+            if player.rect.colliderect(wall) and wall.position != player.position:
+                if player.direction == -90:
+                    player.rect.right = wall.rect.left
+                elif player.direction == 90:
+                    player.rect.left = wall.rect.right
+                if player.direction == 0:
+                    player.rect.top = wall.rect.bottom
+                elif player.direction == 180:
+                    player.rect.bottom = wall.rect.top
         for powerup in powerup_group:
             if player.rect.colliderect(powerup):
                 if powerup.style == 1:
@@ -239,6 +249,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                     player.bombs_max += 1
                 powerup_group.remove(powerup)
                 all_group.remove(powerup)
+                corrupt_rect.append(powerup.rect.copy())
         for explosion in explosion_group:
             if player.rect.colliderect(explosion):
                 player.alive = 0
@@ -262,7 +273,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
             for i in all_group:
                 if i.position == proposed_position:
                     problem = True
-        if loop_number <=10:
+        if loop_number <=10 and not(problem):
             powerup = PowerSprite(proposed_position, random.randint(1,3))
             powerup_group.add(powerup)
             all_group.add(powerup)
