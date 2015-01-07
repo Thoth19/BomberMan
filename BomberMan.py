@@ -6,8 +6,8 @@ clock = pygame.time.Clock()
 
 POWERUP_FREQUENCY = 15000 # higher means less frequent
 SPEED_INCREASE_FACTOR = 0.5
-BOMB_FUSE_LENGTH = 3000 # time in ms between plant and detonation
-EXPLOSION_LIFE_TIME = 1000 # time in ms between explode and end
+BOMB_FUSE_LENGTH = 100 # time in ms between plant and detonation
+EXPLOSION_LIFE_TIME = 50 # time in ms between explode and end
 
 pygame.display.set_caption('BomberMan: A Game of Agility, Strategy and C4')
 #init board
@@ -35,16 +35,21 @@ granite_group = pygame.sprite.Group()
 powerup_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
 
+wall_dict={}
+granite_dict={}
+
 for i in range(len(board)):
     for j in range(len(board[i])):
         if board[i][j] == 2:
             granite = GraniteSprite((i,j))
             granite_group.add(granite)
             all_group.add(granite)
+            granite_dict[(i,j)] = granite
         if board[i][j] == 1:
             wall = WallSprite((i,j))
             wall_group.add(wall)
             all_group.add(wall)
+            wall_dict[(i,j)] = wall
         if board[i][j] == 3:
             player1 = PlayerSprite((i,j),(255,0,0))
             player_group.add(player1)
@@ -111,9 +116,85 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
 
     for i in bomb_group:
         if i.time == BOMB_FUSE_LENGTH:
-            #explode
-            pass
-
+            i.owner.bombs -= 1
+            center = ExplosionCenterSprite((i.position))
+            explosion_group.add(center)
+            all_group.add(center)
+            corrupt_rect.append(center.rect.copy())
+            pos_x=True
+            neg_x =True
+            pos_y=True
+            neg_y=True
+            for j in range(1,bomb.owner.range+1):
+                #if you hit a block stop
+                
+                # if (i.position[0]+j,i.position[1]) in wall_dict.keys() and pos_x:
+                if pos_x:
+                    if (i.position[0]+j,i.position[1]) in wall_dict.keys():
+                        pos_x = False
+                        wall = wall_dict[i.position[0]+j,i.position[1]]
+                        corrupt_rect.append(wall.rect.copy())
+                        wall_group.remove(wall)
+                        all_group.remove(wall)
+                        del wall_dict[i.position[0]+j,i.position[1]]
+                    elif (i.position[0]+j,i.position[1]) in granite_dict.keys():
+                        pos_x = False
+                    else:
+                        explosion = ExplosionLineSprite((i.position[0]+j,i.position[1]),True)
+                        explosion_group.add(explosion)
+                        all_group.add(explosion)
+                if neg_x:
+                    if (i.position[0]-j,i.position[1]) in wall_dict.keys():
+                        neg_x = False
+                        wall =wall_dict[i.position[0]-j,i.position[1]]
+                        corrupt_rect.append(wall.rect.copy())
+                        wall_group.remove(wall)
+                        all_group.remove(wall)
+                        del wall_dict[i.position[0]-j,i.position[1]]
+                    elif (i.position[0]-j,i.position[1]) in granite_dict.keys():
+                        neg_x = False
+                    else:
+                        explosion = ExplosionLineSprite((i.position[0]-j,i.position[1]),True)
+                        explosion_group.add(explosion)
+                        all_group.add(explosion)
+                if pos_y:
+                    if (i.position[0],i.position[1]+j) in wall_dict.keys():
+                        pos_y = False
+                        wall =wall_dict[i.position[0],i.position[1]+j]
+                        corrupt_rect.append(wall.rect.copy())
+                        wall_group.remove(wall)
+                        all_group.remove(wall)
+                        del wall_dict[i.position[0],i.position[1]+j]
+                    elif (i.position[0],i.position[1]+j) in granite_dict.keys():
+                        pos_y = False
+                    else:
+                        explosion = ExplosionLineSprite((i.position[0],i.position[1]+j),False)
+                        explosion_group.add(explosion)
+                        all_group.add(explosion)
+                if neg_y:
+                    if (i.position[0],i.position[1]-j) in wall_dict.keys():
+                        neg_y = False
+                        wall =wall_dict[i.position[0],i.position[1]-j]
+                        corrupt_rect.append(wall.rect.copy())
+                        wall_group.remove(wall)
+                        all_group.remove(wall)
+                        del wall_dict[i.position[0],i.position[1]-j]
+                    elif (i.position[0],i.position[1]-j) in granite_dict.keys():
+                        neg_y = False
+                    else:
+                        explosion = ExplosionLineSprite((i.position[0],i.position[1]-j),False)
+                        explosion_group.add(explosion)
+                        all_group.add(explosion)
+                #else create a explosion line
+            corrupt_rect.append(i.rect.copy())
+            all_group.remove(i)
+            bomb_group.remove(i)
+    for explosion in explosion_group:
+        if explosion.time == EXPLOSION_LIFE_TIME:
+            corrupt_rect.append(explosion.rect.copy())
+            #bug here not removign all explosions why?
+            explosion_group.remove(explosion)
+            all_group.remove(explosion)
     for player in player_group:
         for wall in player_group:
             if player.rect.colliderect(wall) and wall != player:
@@ -164,7 +245,6 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                 player_group.remove(player)
                 all_group.remove(player)
 
-    #spawn explosions
     #able to pass through explosions to begin
 
     #powerups
