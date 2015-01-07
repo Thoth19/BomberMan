@@ -21,8 +21,8 @@ STANDARD_BOARD = [
 [2,1,1,1,1,1,1,1,1,1,2],
 [2,1,2,1,2,1,2,1,2,1,2],
 [2,1,1,1,1,1,1,1,1,1,2],
-[2,1,2,1,2,1,2,1,2,1,2],
-[0,5,0,1,1,1,1,1,1,6,0],
+[2,0,2,1,2,1,2,1,2,0,2],
+[2,5,0,1,1,1,1,1,0,6,2],
 [2,2,2,2,2,2,2,2,2,2,2]]
 board = STANDARD_BOARD
 #todo make boards randomized
@@ -34,9 +34,7 @@ wall_group = pygame.sprite.Group()
 granite_group = pygame.sprite.Group()
 powerup_group = pygame.sprite.Group()
 
-print len(board)
 for i in range(len(board)):
-    print len(board[i])
     for j in range(len(board[i])):
         if board[i][j] == 2:
             granite = GraniteSprite((i,j))
@@ -66,12 +64,48 @@ screen.fill((224,224,224))
 all_group.update()
 all_group.draw(screen)
 pygame.display.flip()
-print "here"
-alive = True
-while alive:
+
+done = False
+while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and not(done):
+    pygame.display.update()
+    pygame.event.poll()
+    clock.tick(30)
+
+    corrupt_rect = []
+
     pressed = pygame.key.get_pressed()
-    print pressed[pygame.K_q]
-    if pressed[pygame.K_q]:
-            pygame.display.quit()
-            alive = False
-            print "there"
+    if pressed[pygame.K_q]: 
+        pygame.display.quit()
+        done = True
+
+    if pressed[pygame.K_w]:
+        corrupt_rect.append(player1.rect.copy())
+        player1.move((0,-player1.speed))
+        player1.rotate(0)
+    if pressed[pygame.K_a]:
+        corrupt_rect.append(player1.rect.copy())
+        player1.move((-player1.speed,0))
+        player1.rotate(90)
+    if pressed[pygame.K_s]:
+        corrupt_rect.append(player1.rect.copy())
+        player1.move((0,player1.speed))
+        player1.rotate(180)
+    if pressed[pygame.K_d]:
+        corrupt_rect.append(player1.rect.copy())
+        player1.move((player1.speed,0))
+        player1.rotate(-90)
+    #add other players movements 
+    if pressed[pygame.K_TAB] and player1.bombs < player1.bombs_max:
+        corrupt_rect.append(player1.rect.copy())
+        bomb = BombSprite((player1.position),player1.range)
+        bomb_group.add(bomb)
+        all_group.add(bomb)
+
+    #update player position when they change squares
+    player1.position = player1.rect.x/50,player1.rect.y/50
+
+    all_group.update()
+    for i in corrupt_rect:
+        screen.fill((224,224,224), i)
+    all_group.draw(screen)
+    pygame.display.flip()
