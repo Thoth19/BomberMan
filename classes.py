@@ -43,9 +43,11 @@ class BombSprite(pygame.sprite.Sprite):
         self.power = owner.range
         self.time = 0
         self.image = pygame.image.load('bomb.png').convert()
+        self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
-        self.rect.x = self.position[0] * 50
-        self.rect.y = self.position[1] * 50
+        self.rect.x = self.position[0] * 50 +5
+        self.rect.y = self.position[1] * 50 +5
+        self.owner = owner
     def update(self):
         self.time += 1
 class WallSprite(pygame.sprite.Sprite):
@@ -77,11 +79,16 @@ class ExplosionLineSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.image = pygame.image.load('fireStrip.png').convert()
+        self.rect = self.image.get_rect()
+        self.image = pygame.transform.scale(self.image,(50,30))
         self.horiz = horiz #boolean for angle
         self.rect.x = position[0] * 50
         self.rect.y = position[1] * 50
         if not(horiz):
             self.image = pygame.transform.rotate(self.image,90)
+            self.rect.x += 10
+        else:
+            self.rect.y +=10
         self.time = 0
     def update(self):
         self.time += 1
@@ -90,6 +97,8 @@ class ExplosionCenterSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.image = pygame.image.load('fireCenter.png').convert()
+        self.image = pygame.transform.scale(self.image,(50,50))
+
         self.time = 0
         self.rect = self.image.get_rect()
         self.rect.x = position[0] * 50
@@ -113,3 +122,4 @@ class PowerSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = position[0] * 50
         self.rect.y = position[1] * 50
+        self.image.set_colorkey((255,255,255))
