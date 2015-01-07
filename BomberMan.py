@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math,random
 from classes import *
 pygame.init()
 screen = pygame.display.set_mode([555,555])
@@ -66,10 +66,13 @@ all_group.draw(screen)
 pygame.display.flip()
 
 done = False
+time = 0
+num_powerups = 0
 while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and not(done):
     pygame.display.update()
     pygame.event.poll()
     clock.tick(30)
+    time += 1
 
     corrupt_rect = []
 
@@ -82,28 +85,81 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         corrupt_rect.append(player1.rect.copy())
         player1.move((0,-player1.speed))
         player1.rotate(0)
-    if pressed[pygame.K_a]:
+    elif pressed[pygame.K_a]:
         corrupt_rect.append(player1.rect.copy())
         player1.move((-player1.speed,0))
         player1.rotate(90)
-    if pressed[pygame.K_s]:
+    elif pressed[pygame.K_s]:
         corrupt_rect.append(player1.rect.copy())
         player1.move((0,player1.speed))
         player1.rotate(180)
-    if pressed[pygame.K_d]:
+    elif pressed[pygame.K_d]:
         corrupt_rect.append(player1.rect.copy())
         player1.move((player1.speed,0))
         player1.rotate(-90)
     #add other players movements 
     if pressed[pygame.K_TAB] and player1.bombs < player1.bombs_max:
         corrupt_rect.append(player1.rect.copy())
-        bomb = BombSprite((player1.position),player1.range)
+        bomb = BombSprite(player1)
         bomb_group.add(bomb)
         all_group.add(bomb)
+        player1.bombs += 1
 
     #update player position when they change squares
     player1.position = player1.rect.x/50,player1.rect.y/50
 
+    for i in bomb_group:
+        if i.time == BOMB_FUSE_LENGTH:
+            #explode
+            pass
+
+    for player in player_group:
+        for wall in wall_group:
+            if player.rect.colliderect(wall):
+                if player.direction == -90:
+                    player.rect.right = wall.rect.left
+                elif player.direction == 90:
+                    player.rect.left = wall.rect.right
+                    
+                if player.direction == 0:
+                    player.rect.top = wall.rect.bottom
+                elif player.direction == 180:
+                    player.rect.bottom = wall.rect.top
+        for wall in granite_group:
+            if player.rect.colliderect(wall):
+                if player.direction == -90:
+                    player.rect.right = wall.rect.left
+                elif player.direction == 90:
+                    player.rect.left = wall.rect.right
+
+                if player.direction == 0:
+                    player.rect.top = wall.rect.bottom
+                elif player.direction == 180:
+                    player.rect.bottom = wall.rect.top
+
+
+
+    #powerups
+    if (num_powerups + 1) * POWERUP_FREQUENCY < time:
+        # print (num_powerups+1)*POWERUP_FREQUENCY
+        num_powerups += 1
+        problem = True
+        loop_number = 0
+        while problem:
+            if loop_number >10:
+                break
+            loop_number += 1
+            problem = False
+            proposed_position = random.randint(1,9),random.randint(1,9)
+            for i in all_group:
+                if i.position == proposed_position:
+                    problem = True
+        if loop_number <=10:
+            powerup = PowerSprite(proposed_position, random.randint(1,3))
+            powerup_group.add(powerup)
+            all_group.add(powerup)
+
+    # print time
     all_group.update()
     for i in corrupt_rect:
         screen.fill((224,224,224), i)
