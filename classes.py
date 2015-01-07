@@ -44,8 +44,8 @@ class BombSprite(pygame.sprite.Sprite):
         self.time = 0
         self.image = pygame.image.load('bomb.png').convert()
         self.rect = self.image.get_rect()
-        self.rect.x = position[0] * 50
-        self.rect.y = position[1] * 50
+        self.rect.x = self.position[0] * 50
+        self.rect.y = self.position[1] * 50
     def update(self):
         self.time += 1
 class WallSprite(pygame.sprite.Sprite):
@@ -97,27 +97,19 @@ class ExplosionCenterSprite(pygame.sprite.Sprite):
     def update(self):
         self.time += 1
 #consider powerups being one object with a variable and three possible images
-class FirePowerSprite(pygame.sprite.Sprite):
-    def __init__(self, position):
+class PowerSprite(pygame.sprite.Sprite):
+    def __init__(self, position, style):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
-        self.image = pygame.image.load('powerupFire.png').convert()
-        self.rect = self.image.get_rect()
-        self.rect.x = position[0] * 50
-        self.rect.y = position[1] * 50
-class SpeedPowerSprite(pygame.sprite.Sprite):
-    def __init__(self, position):
-        pygame.sprite.Sprite.__init__(self)
-        self.position = position
-        self.image = pygame.image.load('powerupSpeed.png').convert()
-        self.rect = self.image.get_rect()
-        self.rect.x = position[0] * 50
-        self.rect.y = position[1] * 50
-class BombPowerSprite(pygame.sprite.Sprite):
-    def __init__(self, position):
-        pygame.sprite.Sprite.__init__(self)
-        self.position = position
-        self.image = pygame.image.load('powerupBomb.png').convert()
+        if style == 1:
+            self.image = pygame.image.load('powerupFire.png').convert()
+            self.style = 1
+        elif style == 2:
+            self.image = pygame.image.load('powerupSpeed.png').convert()
+            self.style = 2
+        else:
+            self.image = pygame.image.load('powerupBomb.png').convert()
+            self.style = 3
         self.rect = self.image.get_rect()
         self.rect.x = position[0] * 50
         self.rect.y = position[1] * 50
