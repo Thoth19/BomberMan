@@ -18,7 +18,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.speed = INITIAL_PLAYER_SPEED
         self.range = 1
         self.bombs = 0
-        self.bombs_max=5
+        self.bombs_max=1
         self.image = pygame.image.load('player.png').convert()
         image2 = pygame.PixelArray(self.image)
         image2.replace((255,255,255),color)
