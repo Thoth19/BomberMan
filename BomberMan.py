@@ -87,33 +87,33 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         pygame.display.quit()
         done = True
 
-    if pressed[pygame.K_w]:
+    if pressed[pygame.K_w]and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         player1.move((0,-player1.speed))
         player1.rotate(0)
-    elif pressed[pygame.K_a]:
+    elif pressed[pygame.K_a]and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         player1.move((-player1.speed,0))
         player1.rotate(90)
-    elif pressed[pygame.K_s]:
+    elif pressed[pygame.K_s]and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         player1.move((0,player1.speed))
         player1.rotate(180)
-    elif pressed[pygame.K_d]:
+    elif pressed[pygame.K_d]and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         player1.move((player1.speed,0))
         player1.rotate(-90)
     #add other players movements 
-    if pressed[pygame.K_TAB] and player1.bombs < player1.bombs_max:
+    if pressed[pygame.K_TAB] and player1.bombs < player1.bombs_max and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         bomb = BombSprite(player1)
         bomb_group.add(bomb)
         all_group.add(bomb)
         player1.bombs += 1
-        print player1.bombs, player1.bombs_max
+        
     #update player position when they change squares
-    player1.position = player1.rect.x/50,player1.rect.y/50
-
+    player1.position = player1.rect.center[0]/50,player1.rect.center[1]/50
+    # print player1.position
     for i in bomb_group:
         if i.time == BOMB_FUSE_LENGTH:
             i.owner.bombs -= 1
@@ -229,16 +229,6 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                     player.rect.top = wall.rect.bottom
                 elif player.direction == 180:
                     player.rect.bottom = wall.rect.top
-        for wall in bomb_group:
-            if player.rect.colliderect(wall) and wall.position != player.position:
-                if player.direction == -90:
-                    player.rect.right = wall.rect.left
-                elif player.direction == 90:
-                    player.rect.left = wall.rect.right
-                if player.direction == 0:
-                    player.rect.top = wall.rect.bottom
-                elif player.direction == 180:
-                    player.rect.bottom = wall.rect.top
         for powerup in powerup_group:
             if player.rect.colliderect(powerup):
                 if powerup.style == 1:
@@ -257,7 +247,24 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                 all_group.remove(player)
 
     #able to pass through explosions to begin
-
+    for bomb in bomb_group:
+            vacated = True
+            for player in player_group:
+                if player.rect.colliderect(bomb) and bomb.solid:
+                    if player.direction == -90:
+                        player.rect.right = bomb.rect.left
+                    elif player.direction == 90:
+                        player.rect.left = bomb.rect.right
+                    if player.direction == 0:
+                        player.rect.top = bomb.rect.bottom
+                    elif player.direction == 180:
+                        player.rect.bottom = bomb.rect.top
+                    print 'get'
+                elif not(bomb.solid) and player.rect.colliderect(bomb):
+                    vacated = False
+                    print "het"
+                print vacated
+                bomb.solid = vacated
     #powerups
     if (num_powerups + 1) * POWERUP_FREQUENCY < time:
         # print (num_powerups+1)*POWERUP_FREQUENCY
@@ -284,3 +291,5 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         screen.fill((224,224,224), i)
     all_group.draw(screen)
     pygame.display.flip()
+
+#TODO switch  to event q so that multiple boms works right
