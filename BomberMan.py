@@ -14,9 +14,9 @@ pygame.display.set_caption('BomberMan: A Game of Agility, Strategy and C4')
 
 STANDARD_BOARD = [
 [2,2,2,2,2,2,2,2,2,2,2],
-[2,3,0,0,1,1,1,1,0,0,2],
-[2,4,0,0,2,1,2,1,2,0,2],
-[2,0,0,0,1,1,1,1,1,1,2],
+[2,3,0,1,1,1,1,1,0,4,2],
+[2,0,2,1,2,1,2,1,2,0,2],
+[2,1,1,1,1,1,1,1,1,1,2],
 [2,1,2,1,2,1,2,1,2,1,2],
 [2,1,1,1,1,1,1,1,1,1,2],
 [2,1,2,1,2,1,2,1,2,1,2],
@@ -103,16 +103,84 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         corrupt_rect.append(player1.rect.copy())
         player1.move((player1.speed,0))
         player1.rotate(-90)
-    #add other players movements 
     if pressed[pygame.K_TAB] and player1.bombs < player1.bombs_max and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         bomb = BombSprite(player1)
         bomb_group.add(bomb)
         all_group.add(bomb)
         player1.bombs += 1
+    #add other players movements 
+    if pressed[pygame.K_i]and player2.alive:
+        corrupt_rect.append(player2.rect.copy())
+        player2.move((0,-player2.speed))
+        player2.rotate(0)
+    elif pressed[pygame.K_j]and player2.alive:
+        corrupt_rect.append(player2.rect.copy())
+        player2.move((-player2.speed,0))
+        player2.rotate(90)
+    elif pressed[pygame.K_k]and player2.alive:
+        corrupt_rect.append(player2.rect.copy())
+        player2.move((0,player2.speed))
+        player2.rotate(180)
+    elif pressed[pygame.K_l]and player2.alive:
+        corrupt_rect.append(player2.rect.copy())
+        player2.move((player2.speed,0))
+        player2.rotate(-90)
+    if pressed[pygame.K_SPACE] and player2.bombs < player2.bombs_max and player2.alive:
+        corrupt_rect.append(player2.rect.copy())
+        bomb = BombSprite(player2)
+        bomb_group.add(bomb)
+        all_group.add(bomb)
+        player2.bombs += 1
         
+    if pressed[pygame.K_UP]and player3.alive:
+        corrupt_rect.append(player3.rect.copy())
+        player3.move((0,-player3.speed))
+        player3.rotate(0)
+    elif pressed[pygame.K_LEFT]and player3.alive:
+        corrupt_rect.append(player3.rect.copy())
+        player3.move((-player3.speed,0))
+        player3.rotate(90)
+    elif pressed[pygame.K_DOWN]and player3.alive:
+        corrupt_rect.append(player3.rect.copy())
+        player3.move((0,player3.speed))
+        player3.rotate(180)
+    elif pressed[pygame.K_RIGHT]and player3.alive:
+        corrupt_rect.append(player3.rect.copy())
+        player3.move((player3.speed,0))
+        player3.rotate(-90)
+    if pressed[pygame.K_RETURN] and player3.bombs < player3.bombs_max and player3.alive:
+        corrupt_rect.append(player3.rect.copy())
+        bomb = BombSprite(player3)
+        bomb_group.add(bomb)
+        all_group.add(bomb)
+        player3.bombs += 1
+
+    if pressed[pygame.K_KP8]and player4.alive:
+        corrupt_rect.append(player4.rect.copy())
+        player4.move((0,-player4.speed))
+        player4.rotate(0)
+    elif pressed[pygame.K_KP4]and player4.alive:
+        corrupt_rect.append(player4.rect.copy())
+        player4.move((-player4.speed,0))
+        player4.rotate(90)
+    elif pressed[pygame.K_KP5]and player4.alive:
+        corrupt_rect.append(player4.rect.copy())
+        player4.move((0,player4.speed))
+        player4.rotate(180)
+    elif pressed[pygame.K_KP6]and player4.alive:
+        corrupt_rect.append(player4.rect.copy())
+        player4.move((player4.speed,0))
+        player4.rotate(-90)
+    if pressed[pygame.K_KP0] and player4.bombs < player4.bombs_max and player4.alive:
+        corrupt_rect.append(player4.rect.copy())
+        bomb = BombSprite(player4)
+        bomb_group.add(bomb)
+        all_group.add(bomb)
+        player4.bombs += 1
+
     #update player position when they change squares
-    player1.position = player1.rect.center[0]/50,player1.rect.center[1]/50
+    # player1.position = player1.rect.center[0]/50,player1.rect.center[1]/50
     
     for i in bomb_group:
         if i.time == BOMB_FUSE_LENGTH:
@@ -127,27 +195,17 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
             neg_y=True
             for j in range(1,bomb.owner.range+1):
                 #if you hit a block stop
-              
-                explosion = ExplosionLineSprite((i.position[0]+j,i.position[1]),True)
-                explosion_group.add(explosion)
-                all_group.add(explosion)
-                corrupt_rect.append(explosion.rect.copy())
                 if pos_x:
-           
                     if (i.position[0]+j,i.position[1]) in wall_dict.keys():
-                        
                         pos_x = False
                         wall = wall_dict[i.position[0]+j,i.position[1]]
                         corrupt_rect.append(wall.rect.copy())
                         wall_group.remove(wall)
                         all_group.remove(wall)
                         del wall_dict[i.position[0]+j,i.position[1]]
-
                     elif (i.position[0]+j,i.position[1]) in granite_dict.keys():
                         pos_x = False
-                        
                     else:
-                        
                         explosion = ExplosionLineSprite((i.position[0]+j,i.position[1]),True)
                         explosion_group.add(explosion)
                         all_group.add(explosion)
@@ -206,11 +264,10 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
     for explosion in explosion_group:
         if explosion.time == EXPLOSION_LIFE_TIME:
             corrupt_rect.append(explosion.rect.copy())
-   
-            #bug here not removign all explosions why?
             explosion_group.remove(explosion)
             all_group.remove(explosion)
     for player in player_group:
+        player.position = player.rect.center[0]/50,player.rect.center[1]/50
         for wall in player_group:
             if player.rect.colliderect(wall) and wall != player:
                 if player.direction == -90:
