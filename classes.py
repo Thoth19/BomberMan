@@ -49,6 +49,7 @@ class BombSprite(pygame.sprite.Sprite):
         self.rect.x = self.position[0] * 50 +5
         self.rect.y = self.position[1] * 50 +5
         self.owner = owner
+        self.solid = False
     def update(self):
         self.time += 1
 class WallSprite(pygame.sprite.Sprite):
@@ -124,6 +125,7 @@ class PowerSprite(pygame.sprite.Sprite):
             self.image = pygame.image.load('powerupBomb.png').convert()
             self.style = 3
             self.image.set_colorkey((0,0,0))
+        
         self.rect = self.image.get_rect()
         self.rect.x = position[0] * 50 +5
         self.rect.y = position[1] * 50 +5
