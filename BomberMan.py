@@ -259,12 +259,9 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                         player.rect.top = bomb.rect.bottom
                     elif player.direction == 180:
                         player.rect.bottom = bomb.rect.top
-                    print 'get'
                 elif not(bomb.solid) and player.rect.colliderect(bomb):
                     vacated = False
-                    print "het"
-                print vacated
-                bomb.solid = vacated
+            bomb.solid = vacated
     #powerups
     if (num_powerups + 1) * POWERUP_FREQUENCY < time:
         # print (num_powerups+1)*POWERUP_FREQUENCY
