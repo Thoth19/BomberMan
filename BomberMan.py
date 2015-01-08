@@ -80,7 +80,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
     clock.tick(30)
     time += 1
 
-    corrupt_rect = []
+    corrupt_rect = [] #rectangles to reset to normal color
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_q]: 
@@ -113,7 +113,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         
     #update player position when they change squares
     player1.position = player1.rect.center[0]/50,player1.rect.center[1]/50
-    # print player1.position
+    
     for i in bomb_group:
         if i.time == BOMB_FUSE_LENGTH:
             i.owner.bombs -= 1
@@ -127,22 +127,31 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
             neg_y=True
             for j in range(1,bomb.owner.range+1):
                 #if you hit a block stop
-                
-                # if (i.position[0]+j,i.position[1]) in wall_dict.keys() and pos_x:
+              
+                explosion = ExplosionLineSprite((i.position[0]+j,i.position[1]),True)
+                explosion_group.add(explosion)
+                all_group.add(explosion)
+                corrupt_rect.append(explosion.rect.copy())
                 if pos_x:
+           
                     if (i.position[0]+j,i.position[1]) in wall_dict.keys():
+                        
                         pos_x = False
                         wall = wall_dict[i.position[0]+j,i.position[1]]
                         corrupt_rect.append(wall.rect.copy())
                         wall_group.remove(wall)
                         all_group.remove(wall)
                         del wall_dict[i.position[0]+j,i.position[1]]
+
                     elif (i.position[0]+j,i.position[1]) in granite_dict.keys():
                         pos_x = False
+                        
                     else:
+                        
                         explosion = ExplosionLineSprite((i.position[0]+j,i.position[1]),True)
                         explosion_group.add(explosion)
                         all_group.add(explosion)
+                        corrupt_rect.append(wall.rect.copy())
                 if neg_x:
                     if (i.position[0]-j,i.position[1]) in wall_dict.keys():
                         neg_x = False
@@ -157,6 +166,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                         explosion = ExplosionLineSprite((i.position[0]-j,i.position[1]),True)
                         explosion_group.add(explosion)
                         all_group.add(explosion)
+                        corrupt_rect.append(wall.rect.copy())
                 if pos_y:
                     if (i.position[0],i.position[1]+j) in wall_dict.keys():
                         pos_y = False
@@ -164,6 +174,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                         corrupt_rect.append(wall.rect.copy())
                         wall_group.remove(wall)
                         all_group.remove(wall)
+                        corrupt_rect.append(wall.rect.copy())
                         del wall_dict[i.position[0],i.position[1]+j]
                     elif (i.position[0],i.position[1]+j) in granite_dict.keys():
                         pos_y = False
@@ -171,6 +182,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                         explosion = ExplosionLineSprite((i.position[0],i.position[1]+j),False)
                         explosion_group.add(explosion)
                         all_group.add(explosion)
+                        corrupt_rect.append(wall.rect.copy())
                 if neg_y:
                     if (i.position[0],i.position[1]-j) in wall_dict.keys():
                         neg_y = False
@@ -178,6 +190,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                         corrupt_rect.append(wall.rect.copy())
                         wall_group.remove(wall)
                         all_group.remove(wall)
+                        corrupt_rect.append(wall.rect.copy())
                         del wall_dict[i.position[0],i.position[1]-j]
                     elif (i.position[0],i.position[1]-j) in granite_dict.keys():
                         neg_y = False
@@ -185,6 +198,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                         explosion = ExplosionLineSprite((i.position[0],i.position[1]-j),False)
                         explosion_group.add(explosion)
                         all_group.add(explosion)
+                        corrupt_rect.append(wall.rect.copy())
                 #else create a explosion line
             corrupt_rect.append(i.rect.copy())
             all_group.remove(i)
@@ -192,6 +206,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
     for explosion in explosion_group:
         if explosion.time == EXPLOSION_LIFE_TIME:
             corrupt_rect.append(explosion.rect.copy())
+   
             #bug here not removign all explosions why?
             explosion_group.remove(explosion)
             all_group.remove(explosion)
@@ -245,6 +260,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
                 player.alive = 0
                 player_group.remove(player)
                 all_group.remove(player)
+                corrupt_rect.append(player.rect.copy())
 
     #able to pass through explosions to begin
     for bomb in bomb_group:
@@ -264,7 +280,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
             bomb.solid = vacated
     #powerups
     if (num_powerups + 1) * POWERUP_FREQUENCY < time:
-        # print (num_powerups+1)*POWERUP_FREQUENCY
+        
         num_powerups += 1
         problem = True
         loop_number = 0
@@ -282,7 +298,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
             powerup_group.add(powerup)
             all_group.add(powerup)
 
-    # print time
+    
     all_group.update()
     for i in corrupt_rect:
         screen.fill((224,224,224), i)
