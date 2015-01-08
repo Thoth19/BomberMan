@@ -84,14 +84,14 @@ class ExplosionLineSprite(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image,(50,30))
         self.horiz = horiz #boolean for angle
         self.rect = self.image.get_rect()
-        self.rect.x = position[0] * 50
-        self.rect.y = position[1] * 50
         if not(horiz):
             self.image = pygame.transform.rotate(self.image,90)
             self.rect.x += 10
         else:
             self.rect.y +=10
         self.rect = self.image.get_rect()
+        self.rect.x = position[0] * 50
+        self.rect.y = position[1] * 50
         self.time = 0
     def update(self):
         self.time += 1
