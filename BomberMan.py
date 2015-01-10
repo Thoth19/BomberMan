@@ -82,11 +82,39 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
 
     corrupt_rect = [] #rectangles to reset to normal color
 
+
+    # use event que instead bc accidently placing 2 bombs at same place. or not allow two boms in same spot
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_q]: 
         pygame.display.quit()
         done = True
-
+    for event in pygame.event.get(pygame.KEYUP):
+    
+        if event.key == pygame.K_TAB and player1.bombs < player1.bombs_max and player1.alive:
+            corrupt_rect.append(player1.rect.copy())
+            bomb = BombSprite(player1)
+            bomb_group.add(bomb)
+            all_group.add(bomb)
+            player1.bombs += 1
+        if event.key == pygame.K_SPACE and player2.bombs < player2.bombs_max and player2.alive:
+            corrupt_rect.append(player2.rect.copy())
+            bomb = BombSprite(player2)
+            bomb_group.add(bomb)
+            all_group.add(bomb)
+            player2.bombs += 1
+        if event.key == pygame.K_RETURN and player3.bombs < player3.bombs_max and player3.alive:
+            corrupt_rect.append(player3.rect.copy())
+            bomb = BombSprite(player3)
+            bomb_group.add(bomb)
+            all_group.add(bomb)
+            player3.bombs += 1
+        if event.key == pygame.K_KP0 and player4.bombs < player4.bombs_max and player4.alive:
+            corrupt_rect.append(player4.rect.copy())
+            bomb = BombSprite(player4)
+            bomb_group.add(bomb)
+            all_group.add(bomb)
+            player4.bombs += 1
+        
     if pressed[pygame.K_w]and player1.alive:
         corrupt_rect.append(player1.rect.copy())
         player1.move((0,-player1.speed))
@@ -103,12 +131,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         corrupt_rect.append(player1.rect.copy())
         player1.move((player1.speed,0))
         player1.rotate(-90)
-    if pressed[pygame.K_TAB] and player1.bombs < player1.bombs_max and player1.alive:
-        corrupt_rect.append(player1.rect.copy())
-        bomb = BombSprite(player1)
-        bomb_group.add(bomb)
-        all_group.add(bomb)
-        player1.bombs += 1
+
     #add other players movements 
     if pressed[pygame.K_i]and player2.alive:
         corrupt_rect.append(player2.rect.copy())
@@ -126,12 +149,6 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         corrupt_rect.append(player2.rect.copy())
         player2.move((player2.speed,0))
         player2.rotate(-90)
-    if pressed[pygame.K_SPACE] and player2.bombs < player2.bombs_max and player2.alive:
-        corrupt_rect.append(player2.rect.copy())
-        bomb = BombSprite(player2)
-        bomb_group.add(bomb)
-        all_group.add(bomb)
-        player2.bombs += 1
         
     if pressed[pygame.K_UP]and player3.alive:
         corrupt_rect.append(player3.rect.copy())
@@ -149,12 +166,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         corrupt_rect.append(player3.rect.copy())
         player3.move((player3.speed,0))
         player3.rotate(-90)
-    if pressed[pygame.K_RETURN] and player3.bombs < player3.bombs_max and player3.alive:
-        corrupt_rect.append(player3.rect.copy())
-        bomb = BombSprite(player3)
-        bomb_group.add(bomb)
-        all_group.add(bomb)
-        player3.bombs += 1
+
 
     if pressed[pygame.K_KP8]and player4.alive:
         corrupt_rect.append(player4.rect.copy())
@@ -172,12 +184,7 @@ while sum([player1.alive, player2.alive, player3.alive, player4.alive])>1 and no
         corrupt_rect.append(player4.rect.copy())
         player4.move((player4.speed,0))
         player4.rotate(-90)
-    if pressed[pygame.K_KP0] and player4.bombs < player4.bombs_max and player4.alive:
-        corrupt_rect.append(player4.rect.copy())
-        bomb = BombSprite(player4)
-        bomb_group.add(bomb)
-        all_group.add(bomb)
-        player4.bombs += 1
+
 
     #update player position when they change squares
     # player1.position = player1.rect.center[0]/50,player1.rect.center[1]/50
